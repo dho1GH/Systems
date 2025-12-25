@@ -4,7 +4,7 @@ OpenAI and Zep Agent Implementation
 from typing import List, Optional, Dict
 import openai
 from zep_python.client import Zep
-from zep_python import Memory, Message
+from zep_python import Message
 from config import Config
 
 
@@ -55,8 +55,10 @@ class ZepOpenAIAgent:
             messages = []
             if memory and memory.messages:
                 for msg in memory.messages:
+                    # role_type is the primary field, role is kept for backward compatibility
+                    role = msg.role_type if msg.role_type else msg.role
                     messages.append({
-                        "role": msg.role_type if msg.role_type else msg.role,
+                        "role": role,
                         "content": msg.content
                     })
             

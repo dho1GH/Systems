@@ -4,9 +4,12 @@ Basic tests for the agent implementation
 import sys
 import os
 
-# Mock environment variables for testing
-os.environ['OPENAI_API_KEY'] = 'test-key-12345'
-os.environ['ZEP_API_URL'] = 'http://localhost:8000'
+
+def setup_test_environment():
+    """Set up mock environment variables for testing"""
+    os.environ['OPENAI_API_KEY'] = 'test-key-12345'
+    os.environ['ZEP_API_URL'] = 'http://localhost:8000'
+
 
 def test_imports():
     """Test that all modules can be imported"""
@@ -17,6 +20,7 @@ def test_imports():
     except ImportError as e:
         print(f"✗ Failed to import Config: {e}")
         return False
+
 
 def test_config_validation():
     """Test configuration validation"""
@@ -32,6 +36,7 @@ def test_config_validation():
     except Exception as e:
         print(f"✗ Config validation failed: {e}")
         return False
+
 
 def test_agent_class_structure():
     """Test that agent class has expected methods"""
@@ -52,8 +57,12 @@ def test_agent_class_structure():
         print(f"✗ Agent class structure test failed: {e}")
         return False
 
+
 def main():
     """Run all tests"""
+    # Set up test environment first
+    setup_test_environment()
+    
     print("=== Running Basic Tests ===\n")
     
     results = []
@@ -85,6 +94,7 @@ def main():
     else:
         print("✗ Some tests failed")
         return 1
+
 
 if __name__ == "__main__":
     sys.exit(main())
