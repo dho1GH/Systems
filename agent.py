@@ -3,8 +3,8 @@ OpenAI and Zep Agent Implementation
 """
 from typing import List, Optional, Dict
 import openai
-from zep_python import ZepClient, Memory
-from zep_python.memory import Message
+from zep_python.client import Zep
+from zep_python import Memory, Message
 from config import Config
 
 
@@ -33,12 +33,12 @@ class ZepOpenAIAgent:
         # Initialize Zep client
         self.zep_client = None
         if Config.ZEP_API_KEY:
-            self.zep_client = ZepClient(
-                api_url=Config.ZEP_API_URL,
+            self.zep_client = Zep(
+                base_url=Config.ZEP_API_URL,
                 api_key=Config.ZEP_API_KEY
             )
         else:
-            self.zep_client = ZepClient(api_url=Config.ZEP_API_URL)
+            self.zep_client = Zep(base_url=Config.ZEP_API_URL)
         
         self.system_prompt = f"You are {Config.AGENT_NAME}, a helpful AI assistant."
     
@@ -56,7 +56,7 @@ class ZepOpenAIAgent:
             if memory and memory.messages:
                 for msg in memory.messages:
                     messages.append({
-                        "role": msg.role,
+                        "role": msg.role_type if msg.role_type else msg.role,
                         "content": msg.content
                     })
             
@@ -75,12 +75,11 @@ class ZepOpenAIAgent:
         """
         try:
             messages = [
-                Message(role="user", content=user_message),
-                Message(role="assistant", content=assistant_message)
+                Message(role_type="user", content=user_message),
+                Message(role_type="assistant", content=assistant_message)
             ]
             
-            memory = Memory(messages=messages)
-            self.zep_client.memory.add(self.session_id, memory)
+            self.zep_client.memory.add(self.session_id, messages=messages)
         except Exception as e:
             print(f"Warning: Could not save memory to Zep: {e}")
     
@@ -142,8 +141,10 @@ class ZepOpenAIAgent:
         """
         try:
             memory = self.zep_client.memory.get(self.session_id)
-            if memory and hasattr(memory, 'summary'):
-                return memory.summary
+            if memory and hasattr(memory, 'summary') and memory.summary:
+                if hasattr(memory.summary, 'content'):
+                    return memory.summary.content
+                return str(memory.summary)
             return None
         except Exception as e:
             print(f"Warning: Could not get memory summary: {e}")
