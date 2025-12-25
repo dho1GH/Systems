@@ -147,7 +147,11 @@ def search_memory():
         query = data["query"]
         top_k = data.get("top_k", 5)
         
-        facts = agent.long_term_memory.search_facts(query, top_k)
+        # Use the appropriate method based on memory type
+        if hasattr(agent.long_term_memory, 'search_memory'):
+            facts = agent.long_term_memory.search_memory(query, top_k)
+        else:
+            facts = agent.long_term_memory.search_facts(query, top_k)
         
         return jsonify({
             "facts": facts,
@@ -278,4 +282,5 @@ def get_stats():
 
 if __name__ == "__main__":
     port = int(os.getenv("AGENT_PORT", "5000"))
-    app.run(host="0.0.0.0", port=port, debug=True)
+    debug_mode = os.getenv("FLASK_DEBUG", "False").lower() == "true"
+    app.run(host="0.0.0.0", port=port, debug=debug_mode)

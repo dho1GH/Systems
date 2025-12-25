@@ -17,6 +17,15 @@ try:
     ZEP_AVAILABLE = True
 except ImportError:
     ZEP_AVAILABLE = False
+    # Define placeholder classes when Zep is not available
+    class Memory:
+        pass
+    class Message:
+        pass
+    class Session:
+        pass
+    class ZepClient:
+        pass
     print("Warning: zep-python not installed. Long-term memory will use local storage.")
 
 
