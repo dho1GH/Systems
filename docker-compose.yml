@@ -1,0 +1,66 @@
+version: '3.8'
+
+services:
+  # Zep Memory Store
+  zep:
+    image: ghcr.io/getzep/zep:latest
+    container_name: zep
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - ZEP_STORE_TYPE=postgres
+      - ZEP_STORE_POSTGRES_DSN=postgres://postgres:postgres@postgres:5432/zep?sslmode=disable
+      - ZEP_AUTH_REQUIRED=false
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # PostgreSQL for Zep
+  postgres:
+    image: postgres:15-alpine
+    container_name: zep_postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=zep
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # ChatGPT Stateful Agent API
+  agent:
+    build: .
+    container_name: chatgpt_agent
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - MODEL_NAME=${MODEL_NAME:-gpt-4}
+      - MAX_TOKENS=${MAX_TOKENS:-2000}
+      - TEMPERATURE=${TEMPERATURE:-0.7}
+      - ZEP_API_URL=http://zep:8000
+      - ZEP_API_KEY=${ZEP_API_KEY:-}
+      - AGENT_PORT=5000
+      - MEMORY_PERSISTENCE_PATH=/app/data/memory
+    volumes:
+      - ./data:/app/data
+    depends_on:
+      zep:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
