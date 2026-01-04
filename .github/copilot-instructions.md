@@ -12,7 +12,7 @@ This file provides guidance to GitHub Copilot for working with this repository. 
 ## Code Style and Formatting
 
 - Use consistent indentation and formatting throughout the codebase
-- Follow language-specific style guides (e.g., PEP 8 for Python, JavaScript Standard Style for JS)
+- Follow language-specific style guides (e.g., PEP 8 for Python, Prettier with ESLint or Airbnb's JavaScript Style Guide for JS)
 - Use meaningful variable and function names that clearly describe their purpose
 - Keep functions and methods focused on a single responsibility
 - Avoid unnecessary complexity; prefer simple, readable solutions
@@ -45,7 +45,7 @@ This file provides guidance to GitHub Copilot for working with this repository. 
 
 - Write clear, descriptive commit messages
 - Keep commits atomic and focused on a single change
-- Reference issue numbers in commit messages when applicable
+- Reference issue numbers in commit messages when applicable (e.g., 'Fixes #123' or 'Resolves #123')
 - Avoid committing generated files, build artifacts, or dependencies
 
 ## Dependencies
@@ -53,7 +53,7 @@ This file provides guidance to GitHub Copilot for working with this repository. 
 - Minimize the number of external dependencies
 - Use well-maintained, reputable libraries
 - Document the purpose of each dependency
-- Keep dependencies up-to-date for security and compatibility
+- Keep dependencies up-to-date for security and compatibility using automated tools like Dependabot or regular review schedules
 
 ## Error Handling
 
