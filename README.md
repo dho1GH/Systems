@@ -55,6 +55,36 @@ ZEP_API_KEY=your_zep_api_key_here  # Optional, depending on your Zep setup
 
 ## Quick Start
 
+### 🚀 Cloud Deployment (Recommended)
+
+Get started in minutes with our one-command initialization:
+
+```bash
+# Clone and initialize
+git clone https://github.com/dho1GH/Systems.git
+cd Systems
+chmod +x init_cloud.sh
+./init_cloud.sh
+```
+
+Or use Docker Compose (includes Zep + PostgreSQL):
+
+```bash
+export OPENAI_API_KEY="sk-your-key-here"
+docker-compose up -d
+
+# Test the API
+curl -X POST http://localhost:5000/api/v1/chat \
+  -H "Content-Type: application/json" \
+  -d '{"message": "Hello!"}'
+```
+
+**📖 See [CLOUD_QUICKSTART.md](CLOUD_QUICKSTART.md) for rapid deployment to AWS, GCP, Azure, or Heroku!**
+
+**📚 Full deployment guide: [CLOUD_DEPLOYMENT.md](CLOUD_DEPLOYMENT.md)**
+
+### 💻 Local Development
+
 ### Running the Example
 
 ```bash
@@ -124,6 +154,60 @@ if branches:
 ```
 
 See `example_enhanced.py` for more advanced usage examples.
+
+## REST API 🆕
+
+The agent includes a production-ready Flask API for cloud deployment.
+
+### Starting the API Server
+
+```bash
+python api.py
+# Or with Docker
+docker-compose up -d
+```
+
+### API Endpoints
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/health` | GET | Health check |
+| `/api/v1/chat` | POST | Basic chat |
+| `/api/v1/chat/enhanced` | POST | Enhanced chat with graph |
+| `/api/v1/session/:id/clear` | POST | Clear session memory |
+| `/api/v1/session/:id/graph` | GET | Get conversation graph |
+| `/api/v1/sessions` | GET | List active sessions |
+
+### Example API Requests
+
+**Basic Chat:**
+```bash
+curl -X POST http://localhost:5000/api/v1/chat \
+  -H "Content-Type: application/json" \
+  -d '{
+    "message": "Hello, how are you?",
+    "session_id": "user-123"
+  }'
+```
+
+**Enhanced Chat with Graph:**
+```bash
+curl -X POST http://localhost:5000/api/v1/chat/enhanced \
+  -H "Content-Type: application/json" \
+  -d '{
+    "message": "Tell me about Python",
+    "session_id": "user-123",
+    "use_dynamic_context": true,
+    "enable_graph": true
+  }'
+```
+
+**Get Conversation Graph:**
+```bash
+curl http://localhost:5000/api/v1/session/user-123/graph
+```
+
+See [CLOUD_DEPLOYMENT.md](CLOUD_DEPLOYMENT.md) for production deployment guides.
 
 ## Architecture
 
